@@ -13,7 +13,7 @@ RED = (255,0,0)
 ORANGE = (255,100,0)
 YELLOW = (255,255,0)
 score = 0
-lives = 3
+lives = 10
 # Open a new window
 size = (800, 600)
 screen = pygame.display.set_mode(size)
