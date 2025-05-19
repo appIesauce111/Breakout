@@ -21,7 +21,7 @@ pygame.display.set_caption("Breakout Game")
 #This will be a list that will contain all the sprites we intend to use in our game.
 all_sprites_list = pygame.sprite.Group()
 #Create the Paddle
-paddle = Paddle(LIGHTBLUE, 100, 10)
+paddle = Paddle(RED, 100, 10)
 paddle.rect.x = 350
 paddle.rect.y = 560
 #Create the ball sprite
@@ -36,13 +36,13 @@ for i in range(7):
     all_sprites_list.add(brick)
     all_bricks.add(brick)
 for i in range(7):
-    brick = Brick(ORANGE,80,30)
+    brick = Brick(RED,80,30)
     brick.rect.x = 60 + i* 100
     brick.rect.y = 100
     all_sprites_list.add(brick)
     all_bricks.add(brick)
 for i in range(7):
-    brick = Brick(YELLOW,80,30)
+    brick = Brick(RED,80,30)
     brick.rect.x = 60 + i* 100
     brick.rect.y = 140
     all_sprites_list.add(brick)
@@ -109,14 +109,15 @@ while carryOn:
             carryOn=False
     # --- Drawing code should go here
     # First, clear the screen to dark blue.
-    screen.fill(DARKBLUE)
-    pygame.draw.line(screen, WHITE, [0, 38], [800, 38], 2)
-    #Display the score and the number of lives at the top of the screen
-    font = pygame.font.Font(None, 34)
-    text = font.render("Score: " + str(score), 1, WHITE)
-    screen.blit(text, (20,10))
-    text = font.render("Lives: " + str(lives), 1, WHITE)
-    screen.blit(text, (650,10))
+    BLACK = (0,0,0)
+    screen.fill(BLACK)
+    # pygame.draw.line(screen, WHITE, [0, 38], [800, 38], 2)
+    # #Display the score and the number of lives at the top of the screen
+    # font = pygame.font.Font(None, 34)
+    # text = font.render("Score: " + str(score), 1, WHITE)
+    # screen.blit(text, (20,10))
+    # text = font.render("Lives: " + str(lives), 1, WHITE)
+    # screen.blit(text, (650,10))
     #Now let's draw all the sprites in one go. (For now we only have 2 sprites!)
     all_sprites_list.draw(screen)
     # --- Go ahead and update the screen with what we've drawn.
