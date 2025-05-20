@@ -1,5 +1,6 @@
 #Import the pygame library and initialise the game engine
 import pygame
+import time
 #Let's import the Paddle Class & the Ball Class
 from paddle import Paddle
 from ball import Ball
@@ -69,10 +70,26 @@ while carryOn:
     # --- Game logic should go here
     all_sprites_list.update()
     #Check if the ball is bouncing against any of the 4 walls:
+
+    seconds_since_epoch = time.time()
+    
+    
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
+        if seconds_since_epoch % 2 == 0:
+            veloc += 5
+        else:
+            veloc = 1
+        if ball.velocity[1] > 0:
+            ball.velocity[1] -= veloc  
+        else: 
+            ball.velocity[1] += veloc
     if ball.rect.x<=0:
         ball.velocity[0] = -ball.velocity[0]
+        if seconds_since_epoch % 2 == 0:
+            veloc += 5
+        else:
+            veloc = 1
     if ball.rect.y>590:
         ball.velocity[1] = -ball.velocity[1]
         lives -= 1
