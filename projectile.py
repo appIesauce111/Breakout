@@ -6,13 +6,12 @@ class Projectile(pygame.sprite.Sprite):
         self.image = pygame.Surface([width, height])
         self.image.fill(BLACK)
         self.image.set_colorkey(BLACK)
+        self.velocity = [5,5]
         pygame.draw.rect(self.image, color, [0, 0, width, height])
         self.rect = self.image.get_rect()
-    def moveLeft(self, pixels):
-        self.rect.x -= pixels
-        if self.rect.x < 0:
+    def fire(self, pixels):
+        self.rect.y -= pixels
+        if self.rect.x > 100:
           self.rect.x = 0
-    def moveRight(self, pixels):
-        self.rect.x += pixels
-        if self.rect.x > 700:
-          self.rect.x = 700
+    def update(self):
+        self.rect.y -= self.velocity[1]

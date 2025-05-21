@@ -5,6 +5,7 @@ import time
 from paddle import Paddle
 from ball import Ball
 from brick import Brick
+from projectile import Projectile
 pygame.init()
 # Define some colors
 WHITE = (255,255,255)
@@ -25,6 +26,9 @@ all_sprites_list = pygame.sprite.Group()
 paddle = Paddle(RED, 100, 10)
 paddle.rect.x = 350
 paddle.rect.y = 560
+
+
+all_sprites = pygame.sprite.Group() 
 #Create the ball sprite
 ball = Ball(WHITE,10,10)
 ball.rect.x = 345
@@ -67,6 +71,14 @@ while carryOn:
         paddle.moveLeft(5)
     if keys[pygame.K_RIGHT]:
         paddle.moveRight(5)
+    if keys[pygame.K_UP]:
+        projectile = None
+        if projectile is None or not all_sprites.has(projectile):
+            projectile = Projectile(YELLOW, 10, 10)
+            projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
+            projectile.rect.y = paddle.rect.y - projectile.rect.height
+            all_sprites_list.add(projectile)
+            all_sprites.add(projectile)
     # --- Game logic should go here
     all_sprites_list.update()
     #Check if the ball is bouncing against any of the 4 walls:
@@ -109,6 +121,14 @@ while carryOn:
       ball.rect.x -= ball.velocity[0]
       ball.rect.y -= ball.velocity[1]
       ball.bounce()
+
+    
+
+    for projectile in [i for i in all_sprites_list if isinstance(i, Projectile)]:
+        if pygame.sprite.collide_mask(ball, projectile):
+            ball.rect.y -= ball.velocity[1]
+            ball.bounce()
+            projectile.kill()
     #Check if there is the ball collides with any of bricks
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
     for brick in brick_collision_list:
