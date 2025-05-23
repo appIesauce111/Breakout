@@ -1,9 +1,11 @@
 #Import the pygame library and initialise the game engine
 import pygame
+import time
 #Let's import the Paddle Class & the Ball Class
 from paddle import Paddle
 from ball import Ball
 from brick import Brick
+from projectile import Projectile
 pygame.init()
 # Define some colors
 WHITE = (255,255,255)
@@ -24,6 +26,9 @@ all_sprites_list = pygame.sprite.Group()
 paddle = Paddle(RED, 100, 10)
 paddle.rect.x = 350
 paddle.rect.y = 560
+
+
+all_sprites = pygame.sprite.Group() 
 #Create the ball sprite
 ball = Ball(WHITE,10,10)
 ball.rect.x = 345
@@ -66,40 +71,67 @@ while carryOn:
         paddle.moveLeft(5)
     if keys[pygame.K_RIGHT]:
         paddle.moveRight(5)
+    if keys[pygame.K_UP]:
+        projectile = None
+        if projectile is None or not all_sprites.has(projectile):
+            projectile = Projectile(YELLOW, 10, 10)
+            projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
+            projectile.rect.y = paddle.rect.y - projectile.rect.height
+            all_sprites_list.add(projectile)
+            all_sprites.add(projectile)
     # --- Game logic should go here
     all_sprites_list.update()
     #Check if the ball is bouncing against any of the 4 walls:
+
+    seconds_since_epoch = time.time()
+    
+    
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
+        if seconds_since_epoch % 2 == 0:
+            veloc += 5
+        else:
+            veloc = 1
+        if ball.velocity[1] > 0:
+            ball.velocity[1] -= veloc  
+        else: 
+            ball.velocity[1] += veloc
     if ball.rect.x<=0:
         ball.velocity[0] = -ball.velocity[0]
+        if seconds_since_epoch % 2 == 0:
+            veloc += 5
+        else:
+            veloc = 1
     if ball.rect.y>590:
         ball.velocity[1] = -ball.velocity[1]
         lives -= 1
         if lives == 0:
-            #Display Game Over Message for 3 seconds
             font = pygame.font.Font(None, 74)
             text = font.render("GAME OVER", 1, WHITE)
             screen.blit(text, (250,300))
             pygame.display.flip()
             pygame.time.wait(3000)
-            #Stop the Game
             carryOn=False
     if ball.rect.y<40:
         ball.velocity[1] = -ball.velocity[1]
-    #Detect collisions between the ball and the paddles
     if pygame.sprite.collide_mask(ball, paddle):
       ball.rect.x -= ball.velocity[0]
       ball.rect.y -= ball.velocity[1]
       ball.bounce()
-    #Check if there is the ball collides with any of bricks
+
+    
+
+    for projectile in [i for i in all_sprites_list if isinstance(i, Projectile)]:
+        if pygame.sprite.collide_mask(ball, projectile):
+            ball.rect.y -= ball.velocity[1]
+            ball.bounce()
+            projectile.kill()
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
     for brick in brick_collision_list:
       ball.bounce()
       score += 1
       brick.kill()
       if len(all_bricks)==0:
-           #Display Level Complete Message for 3 seconds
             font = pygame.font.Font(None, 74)
             text = font.render("LEVEL COMPLETE", 1, WHITE)
             screen.blit(text, (200,300))
@@ -117,12 +149,8 @@ while carryOn:
     # text = font.render("Score: " + str(score), 1, WHITE)
     # screen.blit(text, (20,10))
     # text = font.render("Lives: " + str(lives), 1, WHITE)
-    # screen.blit(text, (650,10))
-    #Now let's draw all the sprites in one go. (For now we only have 2 sprites!)
+    # screen.blit(text, (650,10)
     all_sprites_list.draw(screen)
-    # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
-    # --- Limit to 60 frames per second
     clock.tick(60)
-#Once we have exited the main program loop we can stop the game engine:
 pygame.quit()
