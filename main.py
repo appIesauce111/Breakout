@@ -125,6 +125,10 @@ while carryOn:
         if pygame.sprite.collide_mask(ball, projectile):
             ball.rect.y -= ball.velocity[1]
             ball.bounce()
+            if ball.velocity[1] < 0:
+                ball.velocity[1] = -abs(max(6, abs(ball.velocity[1])))
+            else:
+                ball.velocity[1] = abs(max(6, abs(ball.velocity[1])))
             projectile.kill()
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
     for brick in brick_collision_list:
