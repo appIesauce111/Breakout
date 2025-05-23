@@ -141,10 +141,7 @@ while carryOn:
             screen.blit(text, (200,300))
             pygame.display.flip()
             pygame.time.wait(3000)
-            #Stop the Game
             carryOn=False
-    # --- Drawing code should go here
-    # First, clear the screen to dark blue.
     BLACK = (0,0,0)
     screen.fill(BLACK)
     # pygame.draw.line(screen, WHITE, [0, 38], [800, 38], 2)
