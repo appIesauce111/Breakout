@@ -1,13 +1,11 @@
-#Import the pygame library and initialise the game engine
+
 import pygame
 import time
-#Let's import the Paddle Class & the Ball Class
 from paddle import Paddle
 from ball import Ball
 from brick import Brick
 from projectile import Projectile
 pygame.init()
-# Define some colors
 WHITE = (255,255,255)
 DARKBLUE = (36,90,190)
 LIGHTBLUE = (0,176,240)
@@ -16,13 +14,10 @@ ORANGE = (255,100,0)
 YELLOW = (255,255,0)
 score = 0
 lives = 10
-# Open a new window
 size = (800, 600)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Breakout Game")
-#This will be a list that will contain all the sprites we intend to use in our game.
 all_sprites_list = pygame.sprite.Group()
-#Create the Paddle
 paddle = Paddle(RED, 100, 10)
 paddle.rect.x = 350
 paddle.rect.y = 560
@@ -52,20 +47,14 @@ for i in range(7):
     brick.rect.y = 140
     all_sprites_list.add(brick)
     all_bricks.add(brick)
-# Add the paddle and the ball to the list of sprites
 all_sprites_list.add(paddle)
 all_sprites_list.add(ball)
-# The loop will carry on until the user exits the game (e.g. clicks the close button).
 carryOn = True
-# The clock will be used to control how fast the screen updates
 clock = pygame.time.Clock()
-# -------- Main Program Loop -----------
 while carryOn:
-    # --- Main event loop
-    for event in pygame.event.get(): # User did something
-        if event.type == pygame.QUIT: # If user clicked close
-              carryOn = False # Flag that we are done so we exit this loop
-    #Moving the paddle when the use uses the arrow keys
+    for event in pygame.event.get(): 
+        if event.type == pygame.QUIT: 
+              carryOn = False 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
         paddle.moveLeft(5)
@@ -79,9 +68,7 @@ while carryOn:
             projectile.rect.y = paddle.rect.y - projectile.rect.height
             all_sprites_list.add(projectile)
             all_sprites.add(projectile)
-    # --- Game logic should go here
     all_sprites_list.update()
-    #Check if the ball is bouncing against any of the 4 walls:
 
     seconds_since_epoch = time.time()
     
