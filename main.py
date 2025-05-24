@@ -1,6 +1,7 @@
-
 import pygame
 import time
+import random
+evil_projectile_timer = 0
 from paddle import Paddle
 from ball import Ball
 from brick import Brick
@@ -110,13 +111,24 @@ while carryOn:
 
     for projectile in [i for i in all_sprites_list if isinstance(i, Projectile)]:
         if pygame.sprite.collide_mask(ball, projectile):
-            ball.rect.y -= ball.velocity[1]
-            ball.bounce()
-            if ball.velocity[1] < 0:
-                ball.velocity[1] = -abs(max(6, abs(ball.velocity[1])))
-            else:
-                ball.velocity[1] = abs(max(6, abs(ball.velocity[1])))
+            ball.rect.y = projectile.rect.y - ball.rect.height 
+            ball.velocity[1] = -abs(max(6, abs(ball.velocity[1])))  
             projectile.kill()
+
+        
+    if random.randint(1, 60) == 1: 
+        evil_proj = Projectile(ORANGE, 10, 10, direction="down")
+        evil_proj.rect.x = random.randint(0, size[0] - 10)
+        evil_proj.rect.y = 0
+        all_sprites_list.add(evil_proj)
+        all_sprites.add(evil_proj)
+    for evil_proj in [i for i in all_sprites_list if isinstance(i, Projectile) and getattr(i, "direction", "up") == "down"]:
+        if pygame.sprite.collide_mask(paddle, evil_proj):
+            lives -= 1  # Or any penalty you want
+            evil_proj.kill()
+        if pygame.sprite.collide_mask(ball, evil_proj):
+            ball.velocity[1] = abs(max(6, abs(ball.velocity[1])))  # Bounce ball down
+            evil_proj.kill()
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
     for brick in brick_collision_list:
       ball.bounce()

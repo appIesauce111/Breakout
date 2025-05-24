@@ -8,11 +8,10 @@ class Ball(pygame.sprite.Sprite):
         self.image = pygame.Surface([width, height], pygame.SRCALPHA)
         self.image.fill(BLACK)
         self.image.set_colorkey(BLACK)
-        # Draw a circle instead of a rectangle
         pygame.draw.circle(self.image, color, (width // 2, height // 2), width // 2)
         self.velocity = [randint(4,8),randint(-8,8)]
         self.rect = self.image.get_rect()
-        self.mask = pygame.mask.from_surface(self.image)  # For accurate collision
+        self.mask = pygame.mask.from_surface(self.image) 
 
     def update(self):
         self.rect.x += self.velocity[0]
@@ -24,7 +23,6 @@ class Ball(pygame.sprite.Sprite):
             self.velocity[0] = randint(2, 4)
         else:
             self.velocity[0] += randint(-1, 1)
-        # Prevent horizontal velocity from being too small
         if 0 < abs(self.velocity[0]) < 2:
             if self.velocity[0] > 0:
                 self.velocity[0] = 2
