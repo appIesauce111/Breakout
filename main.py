@@ -171,7 +171,7 @@ while carryOn:
                     carryOn = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
-                        projectile = Projectile(YELLOW, 10, 10)
+                        projectile = Projectile(YELLOW, 60, 10)
                         projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
                         projectile.rect.y = paddle.rect.y - projectile.rect.height
                         all_sprites_list.add(projectile)
