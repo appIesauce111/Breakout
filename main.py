@@ -25,7 +25,6 @@ paddle.rect.y = 560
 
 
 all_sprites = pygame.sprite.Group() 
-#Create the ball sprite
 ball = Ball(WHITE,10,10)
 ball.rect.x = 345
 ball.rect.y = 195
@@ -53,22 +52,23 @@ all_sprites_list.add(ball)
 carryOn = True
 clock = pygame.time.Clock()
 while carryOn:
-    for event in pygame.event.get(): 
-        if event.type == pygame.QUIT: 
-              carryOn = False 
+    clock.tick(120)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            carryOn = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                projectile = Projectile(YELLOW, 50, 10)
+                projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
+                projectile.rect.y = paddle.rect.y - projectile.rect.height
+                all_sprites_list.add(projectile)
+                all_sprites.add(projectile)
+
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
         paddle.moveLeft(5)
     if keys[pygame.K_RIGHT]:
         paddle.moveRight(5)
-    if keys[pygame.K_UP]:
-        projectile = None
-        if projectile is None or not all_sprites.has(projectile):
-            projectile = Projectile(YELLOW, 10, 10)
-            projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
-            projectile.rect.y = paddle.rect.y - projectile.rect.height
-            all_sprites_list.add(projectile)
-            all_sprites.add(projectile)
     all_sprites_list.update()
 
     seconds_since_epoch = time.time()
@@ -134,13 +134,123 @@ while carryOn:
       ball.bounce()
       score += 1
       brick.kill()
-      if len(all_bricks)==0:
-            font = pygame.font.Font(None, 74)
-            text = font.render("LEVEL COMPLETE", 1, WHITE)
-            screen.blit(text, (200,300))
+      if len(all_bricks) == 0:
+        font = pygame.font.Font(None, 74)
+        text = font.render("LEVEL COMPLETE", 1, WHITE)
+        screen.blit(text, (200, 300))
+        pygame.display.flip()
+        pygame.time.wait(2000)
+
+        # --- Start new level in a larger window ---
+        size = (1200, 900)  # New, larger window size
+        screen = pygame.display.set_mode(size)
+        all_sprites_list = pygame.sprite.Group()
+        all_bricks = pygame.sprite.Group()
+        paddle = Paddle(RED, 150, 15)
+        paddle.rect.x = size[0] // 2 - 75
+        paddle.rect.y = size[1] - 40
+        ball = Ball(WHITE, 15, 15)
+        ball.rect.x = size[0] // 2 - 7
+        ball.rect.y = size[1] // 2
+        all_sprites_list.add(paddle)
+        all_sprites_list.add(ball)
+        # Add more bricks for the bigger window
+        for row in range(3):
+            for i in range(12):
+                brick = Brick(RED, 90, 35)
+                brick.rect.x = 60 + i * 95
+                brick.rect.y = 60 + row * 45
+                all_sprites_list.add(brick)
+                all_bricks.add(brick)
+        
+        score = 0
+        lives = 10
+        
+        
+        carryOn = True
+        while carryOn:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    carryOn = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        projectile = Projectile(YELLOW, 10, 10)
+                        projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
+                        projectile.rect.y = paddle.rect.y - projectile.rect.height
+                        all_sprites_list.add(projectile)
+                        all_sprites.add(projectile)
+
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                paddle.moveLeft(7)
+            if keys[pygame.K_RIGHT]:
+                paddle.moveRight(7)
+            all_sprites_list.update()
+            if ball.rect.x>= 1200:
+                ball.velocity[0] = -ball.velocity[0]
+                if seconds_since_epoch % 2 == 0:
+                    veloc += 5
+                else:
+                    veloc = 1
+                if ball.velocity[1] > 0:
+                    ball.velocity[1] -= veloc  
+                else: 
+                    ball.velocity[1] += veloc
+            if ball.rect.x<=0:
+                ball.velocity[0] = -ball.velocity[0]
+                if seconds_since_epoch % 2 == 0:
+                    veloc += 5
+                else:
+                    veloc = 1
+            if ball.rect.y>1000:
+                ball.velocity[1] = -ball.velocity[1]
+                lives -= 1
+                if lives == 0:
+                    font = pygame.font.Font(None, 74)
+                    text = font.render("GAME OVER", 1, WHITE)
+                    screen.blit(text, (250,300))
+                    pygame.display.flip()
+                    pygame.time.wait(3000)
+                    carryOn=False
+            if ball.rect.y<40:
+                ball.velocity[1] = -ball.velocity[1]
+            if pygame.sprite.collide_mask(ball, paddle):
+                ball.rect.x -= ball.velocity[0]
+                ball.rect.y -= ball.velocity[1]
+                ball.bounce()
+
+            
+
+            for projectile in [i for i in all_sprites_list if isinstance(i, Projectile)]:
+                if pygame.sprite.collide_mask(ball, projectile):
+                    ball.rect.y = projectile.rect.y - ball.rect.height 
+                    ball.velocity[1] = -abs(max(6, abs(ball.velocity[1])))  
+                    projectile.kill()
+
+                
+            if random.randint(1, 60) == 1: 
+                evil_proj = Projectile(ORANGE, 10, 10, direction="down")
+                evil_proj.rect.x = random.randint(0, size[0] - 10)
+                evil_proj.rect.y = 0
+                all_sprites_list.add(evil_proj)
+                all_sprites.add(evil_proj)
+            for evil_proj in [i for i in all_sprites_list if isinstance(i, Projectile) and getattr(i, "direction", "up") == "down"]:
+                if pygame.sprite.collide_mask(paddle, evil_proj):
+                    lives -= 1  # Or any penalty you want
+                    evil_proj.kill()
+                if pygame.sprite.collide_mask(ball, evil_proj):
+                    ball.velocity[1] = abs(max(6, abs(ball.velocity[1])))  # Bounce ball down
+                    evil_proj.kill()
+            brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
+            for brick in brick_collision_list:
+                ball.bounce()
+            score += 1
+            brick.kill()
+            BLACK = (0, 0, 0)
+            screen.fill(BLACK)
+            all_sprites_list.draw(screen)
             pygame.display.flip()
-            pygame.time.wait(3000)
-            carryOn=False
+            clock.tick(120)
     BLACK = (0,0,0)
     screen.fill(BLACK)
     # pygame.draw.line(screen, WHITE, [0, 38], [800, 38], 2)
