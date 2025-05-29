@@ -17,7 +17,8 @@ class Projectile(pygame.sprite.Sprite):
     def update(self):
         if self.direction == "up":
             self.rect.y -= self.velocity
-        else:  # "down"
+            self.velocity += 0.2  
+        else:  
             self.rect.y += self.velocity
-        if self.rect.y > 600:
+        if self.rect.y > 600 or self.rect.y < 0:
             self.kill()

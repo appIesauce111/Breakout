@@ -24,7 +24,6 @@ paddle.rect.x = 350
 paddle.rect.y = 560
 
 
-all_sprites = pygame.sprite.Group() 
 ball = Ball(WHITE,10,10)
 ball.rect.x = 345
 ball.rect.y = 195
@@ -62,7 +61,6 @@ while carryOn:
                 projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
                 projectile.rect.y = paddle.rect.y - projectile.rect.height
                 all_sprites_list.add(projectile)
-                all_sprites.add(projectile)
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
@@ -121,7 +119,6 @@ while carryOn:
         evil_proj.rect.x = random.randint(0, size[0] - 10)
         evil_proj.rect.y = 0
         all_sprites_list.add(evil_proj)
-        all_sprites.add(evil_proj)
     for evil_proj in [i for i in all_sprites_list if isinstance(i, Projectile) and getattr(i, "direction", "up") == "down"]:
         if pygame.sprite.collide_mask(paddle, evil_proj):
             lives -= 1  # Or any penalty you want
@@ -178,7 +175,6 @@ while carryOn:
                         projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
                         projectile.rect.y = paddle.rect.y - projectile.rect.height
                         all_sprites_list.add(projectile)
-                        all_sprites.add(projectile)
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
@@ -233,7 +229,6 @@ while carryOn:
                 evil_proj.rect.x = random.randint(0, size[0] - 10)
                 evil_proj.rect.y = 0
                 all_sprites_list.add(evil_proj)
-                all_sprites.add(evil_proj)
             for evil_proj in [i for i in all_sprites_list if isinstance(i, Projectile) and getattr(i, "direction", "up") == "down"]:
                 if pygame.sprite.collide_mask(paddle, evil_proj):
                     lives -= 1  # Or any penalty you want
