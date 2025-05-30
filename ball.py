@@ -24,13 +24,10 @@ class Ball(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def _create_image(self):
-        """Create the ball image with current color and size"""
         self.image = pygame.Surface([self.current_width, self.current_height], pygame.SRCALPHA)
         self.image.fill(BLACK)
         self.image.set_colorkey(BLACK)
-        pygame.draw.circle(self.image, self.current_color, 
-                         (self.current_width // 2, self.current_height // 2), 
-                         self.current_width // 2)
+        pygame.draw.circle(self.image, self.current_color, (self.current_width // 2, self.current_height // 2), self.current_width // 2)
 
     def update(self):
         self.rect.x += self.velocity[0]
