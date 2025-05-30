@@ -20,5 +20,5 @@ class Projectile(pygame.sprite.Sprite):
             self.velocity += 0.2  
         else:  
             self.rect.y += self.velocity
-        if self.rect.y > 600 or self.rect.y < 0:
+        if self.rect.y > 1200 or self.rect.y < -1200:
             self.kill()
