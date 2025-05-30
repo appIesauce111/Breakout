@@ -22,6 +22,7 @@ all_sprites_list = pygame.sprite.Group()
 paddle = Paddle(RED, 100, 10)
 paddle.rect.x = 350
 paddle.rect.y = 560
+paddle2 = None
 
 
 ball = Ball(WHITE,10,10)
@@ -61,12 +62,32 @@ while carryOn:
                 projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
                 projectile.rect.y = paddle.rect.y - projectile.rect.height
                 all_sprites_list.add(projectile)
+            if event.key == pygame.K_2:
+                paddle2 = Paddle(LIGHTBLUE, 100, 10)
+                paddle2.rect.x = 350
+                paddle2.rect.y = 530
+                all_sprites_list.add(paddle2)
+                if pygame.sprite.collide_mask(ball, paddle2):
+                    ball.rect.x -= ball.velocity[0]
+                    ball.rect.y -= ball.velocity[1]
+                    ball.bounce()
+            if event.key == pygame.K_w:
+                projectile = Projectile(YELLOW, 50, 10)
+                projectile.rect.x = paddle2.rect.x + paddle2.rect.width // 2 - projectile.rect.width // 2
+                projectile.rect.y = paddle2.rect.y - projectile.rect.height
+                all_sprites_list.add(projectile)
+
+           
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
         paddle.moveLeft(5)
     if keys[pygame.K_RIGHT]:
         paddle.moveRight(5)
+    if keys[pygame.K_a]:
+        paddle2.moveLeft(5)
+    if keys[pygame.K_d]:
+        paddle2.moveRight(5)
     all_sprites_list.update()
 
     seconds_since_epoch = time.time()
@@ -104,6 +125,12 @@ while carryOn:
       ball.rect.x -= ball.velocity[0]
       ball.rect.y -= ball.velocity[1]
       ball.bounce()
+    if paddle2 is not None and paddle2 in all_sprites_list:
+        if pygame.sprite.collide_mask(ball, paddle2):
+            ball.rect.x -= ball.velocity[0]
+            ball.rect.y -= ball.velocity[1]
+            ball.bounce()
+    
 
     
 
@@ -175,12 +202,26 @@ while carryOn:
                         projectile.rect.x = paddle.rect.x + paddle.rect.width // 2 - projectile.rect.width // 2
                         projectile.rect.y = paddle.rect.y - projectile.rect.height
                         all_sprites_list.add(projectile)
+                    if event.key == pygame.K_2:
+                        paddle2 = Paddle(LIGHTBLUE, 100, 10)
+                        paddle2.rect.x = 350
+                        paddle2.rect.y = 600
+                        all_sprites_list.add(paddle2)
+                    if event.key == pygame.K_w:
+                        projectile = Projectile(YELLOW, 50, 10)
+                        projectile.rect.x = paddle2.rect.x + paddle2.rect.width // 2 - projectile.rect.width // 2
+                        projectile.rect.y = paddle2.rect.y - projectile.rect.height
+                        all_sprites_list.add(projectile)
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
                 paddle.moveLeft(7)
             if keys[pygame.K_RIGHT]:
                 paddle.moveRight(7)
+            if keys[pygame.K_a]:
+                paddle2.moveRight(5)
+            if keys[pygame.K_d]:
+                paddle2.moveRight(5)
             all_sprites_list.update()
             if ball.rect.x>= 1200:
                 ball.velocity[0] = -ball.velocity[0]
@@ -214,6 +255,10 @@ while carryOn:
                 ball.rect.x -= ball.velocity[0]
                 ball.rect.y -= ball.velocity[1]
                 ball.bounce()
+            if pygame.sprite.collide_mask(ball, paddle2):
+                ball.rect.x -= ball.velocity[0]
+                ball.rect.y -= ball.velocity[1]
+                ball.bounce()
 
             
 
@@ -231,6 +276,9 @@ while carryOn:
                 all_sprites_list.add(evil_proj)
             for evil_proj in [i for i in all_sprites_list if isinstance(i, Projectile) and getattr(i, "direction", "up") == "down"]:
                 if pygame.sprite.collide_mask(paddle, evil_proj):
+                    lives -= 1  # Or any penalty you want
+                    evil_proj.kill()
+                if pygame.sprite.collide_mask(paddle2, evil_proj):
                     lives -= 1  # Or any penalty you want
                     evil_proj.kill()
                 if pygame.sprite.collide_mask(ball, evil_proj):
