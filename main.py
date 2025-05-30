@@ -148,10 +148,10 @@ while carryOn:
         all_sprites_list.add(evil_proj)
     for evil_proj in [i for i in all_sprites_list if isinstance(i, Projectile) and getattr(i, "direction", "up") == "down"]:
         if pygame.sprite.collide_mask(paddle, evil_proj):
-            lives -= 1  # Or any penalty you want
+            lives -= 1 
             evil_proj.kill()
         if pygame.sprite.collide_mask(ball, evil_proj):
-            ball.velocity[1] = abs(max(6, abs(ball.velocity[1])))  # Bounce ball down
+            ball.velocity[1] = abs(max(6, abs(ball.velocity[1]))) 
             evil_proj.kill()
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
     for brick in brick_collision_list:
@@ -165,8 +165,8 @@ while carryOn:
         pygame.display.flip()
         pygame.time.wait(2000)
 
-        # --- Start new level in a larger window ---
-        size = (1200, 900)  # New, larger window size
+
+        size = (1200, 900)  
         screen = pygame.display.set_mode(size)
         all_sprites_list = pygame.sprite.Group()
         all_bricks = pygame.sprite.Group()
@@ -178,7 +178,6 @@ while carryOn:
         ball.rect.y = size[1] // 2
         all_sprites_list.add(paddle)
         all_sprites_list.add(ball)
-        # Add more bricks for the bigger window
         for row in range(3):
             for i in range(12):
                 brick = Brick(RED, 90, 35)
@@ -260,31 +259,30 @@ while carryOn:
                 ball.rect.y -= ball.velocity[1]
                 ball.bounce()
 
-            
-
             for projectile in [i for i in all_sprites_list if isinstance(i, Projectile)]:
                 if pygame.sprite.collide_mask(ball, projectile):
                     ball.rect.y = projectile.rect.y - ball.rect.height 
                     ball.velocity[1] = -abs(max(6, abs(ball.velocity[1])))  
                     projectile.kill()
 
-                
             if random.randint(1, 60) == 1: 
                 evil_proj = Projectile(ORANGE, 10, 10, direction="down")
                 evil_proj.rect.x = random.randint(0, size[0] - 10)
                 evil_proj.rect.y = 0
                 all_sprites_list.add(evil_proj)
+
             for evil_proj in [i for i in all_sprites_list if isinstance(i, Projectile) and getattr(i, "direction", "up") == "down"]:
                 if pygame.sprite.collide_mask(paddle, evil_proj):
-                    lives -= 1  # Or any penalty you want
+                    lives -= 1  
                     evil_proj.kill()
                 if pygame.sprite.collide_mask(paddle2, evil_proj):
-                    lives -= 1  # Or any penalty you want
+                    lives -= 1 
                     evil_proj.kill()
                 if pygame.sprite.collide_mask(ball, evil_proj):
-                    ball.velocity[1] = abs(max(6, abs(ball.velocity[1])))  # Bounce ball down
+                    ball.velocity[1] = abs(max(6, abs(ball.velocity[1]))) 
                     evil_proj.kill()
             brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
+
             for brick in brick_collision_list:
                 ball.bounce()
             score += 1
@@ -296,13 +294,6 @@ while carryOn:
             clock.tick(120)
     BLACK = (0,0,0)
     screen.fill(BLACK)
-    # pygame.draw.line(screen, WHITE, [0, 38], [800, 38], 2)
-    # #Display the score and the number of lives at the top of the screen
-    # font = pygame.font.Font(None, 34)
-    # text = font.render("Score: " + str(score), 1, WHITE)
-    # screen.blit(text, (20,10))
-    # text = font.render("Lives: " + str(lives), 1, WHITE)
-    # screen.blit(text, (650,10)
     all_sprites_list.draw(screen)
     pygame.display.flip()
     clock.tick(60)
