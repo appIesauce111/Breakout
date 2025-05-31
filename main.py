@@ -11,6 +11,7 @@ WHITE = (255,255,255)
 DARKBLUE = (36,90,190)
 LIGHTBLUE = (0,176,240)
 RED = (255,0,0)
+GREEN = (0, 255, 0)
 ORANGE = (255,100,0)
 YELLOW = (255,255,0)
 score = 0
@@ -29,26 +30,38 @@ ball = Ball(WHITE,10,10)
 ball.rect.x = 345
 ball.rect.y = 195
 all_bricks = pygame.sprite.Group()
-for i in range(7):
-    brick = Brick(RED,80,30)
-    brick.rect.x = 60 + i* 100
+for i in range(8):
+    if i in [2, 8]:  
+        brick = Brick(GREEN, 80, 30)
+        brick.is_slow_brick = True
+    else:
+        brick = Brick(RED, 80, 30)
+        brick.is_slow_brick = False
+    brick.rect.x = 60 + (i-0.5) * 100
     brick.rect.y = 60
     all_sprites_list.add(brick)
     all_bricks.add(brick)
-for i in range(7):
-    brick = Brick(RED,80,30)
-    brick.rect.x = 60 + i* 100
+for i in range(8):
+    if i in [random.randint(5,6), random.randint(7,8)]: 
+        brick = Brick(GREEN, 80, 30)
+        brick.is_slow_brick = True
+    else:
+        brick = Brick(RED, 80, 30)
+        brick.is_slow_brick = False
+    brick.rect.x = 60 + (i-0.5) * 100
     brick.rect.y = 100
     all_sprites_list.add(brick)
     all_bricks.add(brick)
-for i in range(7):
+for i in range(8):
     brick = Brick(RED,80,30)
-    brick.rect.x = 60 + i* 100
+    brick.rect.x = 60 + (i-0.5)* 100
     brick.rect.y = 140
     all_sprites_list.add(brick)
     all_bricks.add(brick)
 all_sprites_list.add(paddle)
 all_sprites_list.add(ball)
+slow_effect_active = False
+slow_effect_end_time = 0
 carryOn = True
 clock = pygame.time.Clock()
 while carryOn:
@@ -90,6 +103,11 @@ while carryOn:
         paddle2.moveRight(5)
     all_sprites_list.update()
 
+    if slow_effect_active:
+        if ball.velocity[1] > 0:
+            ball.velocity[1] = max(1, ball.velocity[1] - 0.05)  
+        if time.time() > slow_effect_end_time:
+            slow_effect_active = False
     seconds_since_epoch = time.time()
     
     
@@ -155,10 +173,13 @@ while carryOn:
             evil_proj.kill()
     brick_collision_list = pygame.sprite.spritecollide(ball,all_bricks,False)
     for brick in brick_collision_list:
-      ball.bounce()
-      score += 1
-      brick.kill()
-      if len(all_bricks) == 0:
+        ball.bounce()
+        score += 1
+        if hasattr(brick, "is_slow_brick") and brick.is_slow_brick:
+            slow_effect_active = True
+            slow_effect_end_time = time.time() + 4
+        brick.kill()
+    if len(all_bricks) == 0:
         font = pygame.font.Font(None, 74)
         text = font.render("LEVEL COMPLETE", 1, WHITE)
         screen.blit(text, (200, 300))
@@ -180,15 +201,23 @@ while carryOn:
         all_sprites_list.add(ball)
         for row in range(3):
             for i in range(12):
+                if i in [random.randint(5,6), random.randint(7,8)]: 
+                    brick = Brick(GREEN, 80, 30)
+                    brick.is_slow_brick = True
+                else:
+                    brick = Brick(RED, 90, 35)
+                    brick.is_slow_brick = False
                 brick = Brick(RED, 90, 35)
                 brick.rect.x = 60 + i * 95
                 brick.rect.y = 60 + row * 45
                 all_sprites_list.add(brick)
                 all_bricks.add(brick)
+                
         
         score = 0
         lives = 10
-        
+        slow_effect_active = False
+        slow_effect_end_time = 0
         
         carryOn = True
         while carryOn:
@@ -211,7 +240,8 @@ while carryOn:
                         projectile.rect.x = paddle2.rect.x + paddle2.rect.width // 2 - projectile.rect.width // 2
                         projectile.rect.y = paddle2.rect.y - projectile.rect.height
                         all_sprites_list.add(projectile)
-
+            ball.rect.x = 300
+            ball.rect.y = 300
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
                 paddle.moveLeft(7)
@@ -222,6 +252,12 @@ while carryOn:
             if keys[pygame.K_d]:
                 paddle2.moveRight(5)
             all_sprites_list.update()
+            if slow_effect_active:
+                    if ball.velocity[1] > 0:
+                        ball.velocity[1] = max(1, ball.velocity[1] - 0.05)  
+                    if time.time() > slow_effect_end_time:
+                        slow_effect_active = False
+            seconds_since_epoch = time.time()
             if ball.rect.x>= 1200:
                 ball.velocity[0] = -ball.velocity[0]
                 if seconds_since_epoch % 2 == 0:
@@ -285,8 +321,11 @@ while carryOn:
 
             for brick in brick_collision_list:
                 ball.bounce()
-            score += 1
-            brick.kill()
+                score += 1
+                if hasattr(brick, "is_slow_brick") and brick.is_slow_brick:
+                    slow_effect_active = True
+                    slow_effect_end_time = time.time() + 3
+                brick.kill()
             BLACK = (0, 0, 0)
             screen.fill(BLACK)
             all_sprites_list.draw(screen)
