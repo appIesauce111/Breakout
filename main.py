@@ -14,6 +14,9 @@ RED = (255,0,0)
 GREEN = (0, 255, 0)
 ORANGE = (255,100,0)
 YELLOW = (255,255,0)
+paddle_colors = [RED, DARKBLUE, LIGHTBLUE, WHITE, GREEN, ORANGE, YELLOW]
+current_paddle_color_index = 0
+
 score = 0
 lives = 10
 levelcomp = None
@@ -77,6 +80,12 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
                     projectile.rect.y = paddle2.rect.y - projectile.rect.height
                     all.add(projectile)
 
+                if event.key == pygame.K_p:
+                    global current_paddle_color_index
+                    current_paddle_color_index += 1
+                    current_paddle_color_index %= len(paddle_colors)
+                    paddle.image.fill(paddle_colors[current_paddle_color_index])
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             paddle.moveLeft(5)
@@ -108,6 +117,7 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
         
         if ball.rect.x>=wall1:
             ball.velocity[0] = -ball.velocity[0]
+            veloc = 0
             if seconds_since_epoch % 2 == 0:
                 veloc += 5
             else:
@@ -191,6 +201,8 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
         screen.fill(BLACK)
         all.draw(screen)
         pygame.display.flip()
+
+
 
 
         if len(allbs) == 0:
