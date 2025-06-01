@@ -14,8 +14,8 @@ RED = (255,0,0)
 GREEN = (0, 255, 0)
 ORANGE = (255,100,0)
 YELLOW = (255,255,0)
-paddle_colors = [RED, DARKBLUE, LIGHTBLUE, WHITE, GREEN, ORANGE, YELLOW]
-current_paddle_color_index = 0
+pcolors = [RED, DARKBLUE, LIGHTBLUE, WHITE, GREEN, ORANGE, YELLOW]
+pcolornum = 0
 
 score = 0
 lives = 10
@@ -40,11 +40,11 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
         for i in range(brickcs):
             if i in greenies: 
                 brick = Brick(GREEN, 80, 30)
-                brick.is_slow_brick = True
-                brick.hits_left = 3
+                brick.isslow = True
+                brick.morhits = 3
             else:
                 brick = Brick(RED, 80, 30)
-                brick.is_slow_brick = False
+                brick.isslow = False
             brick.rect.x = 60 + i * 95
             brick.rect.y = 60 + row * 45
             all.add(brick)
@@ -81,10 +81,10 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
                     all.add(projectile)
 
                 if event.key == pygame.K_p:
-                    global current_paddle_color_index
-                    current_paddle_color_index += 1
-                    current_paddle_color_index %= len(paddle_colors)
-                    paddle.image.fill(paddle_colors[current_paddle_color_index])
+                    global pcolornum
+                    pcolornum += 1
+                    pcolornum %= len(pcolors)
+                    paddle.image.fill(pcolors[pcolornum])
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
@@ -114,26 +114,24 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
 
         seconds_since_epoch = time.time()
         
+                
+        if ball.rect.x <= 0:
+            ball.rect.x = 0
+            ball.bounceh()
+
         
-        if ball.rect.x>=wall1:
-            ball.velocity[0] = -ball.velocity[0]
-            veloc = 0
-            if seconds_since_epoch % 2 == 0:
-                veloc += 5
-            else:
-                veloc = 1
-            if ball.velocity[1] > 0:
-                ball.velocity[1] -= veloc  
-            else: 
-                ball.velocity[1] += veloc
-        if ball.rect.x<=0:
-            ball.velocity[0] = -ball.velocity[0]
-            if seconds_since_epoch % 2 == 0:
-                veloc += 5
-            else:
-                veloc = 1
-        if ball.rect.y>wall2:
-            ball.velocity[1] = -ball.velocity[1]
+        if ball.rect.x + ball.rect.width >= wall1:
+            ball.rect.x = wall1 - ball.rect.width
+            ball.bounceh()
+
+        
+        if ball.rect.y <= wall3:
+            ball.rect.y = wall3
+            ball.bouncev()
+
+        
+        if ball.rect.y + ball.rect.height >= wall2:
+            ball.rect.y = wall2 - ball.rect.height
             lives -= 1
             if lives == 0:
                 font = pygame.font.Font(None, 74)
@@ -142,8 +140,40 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
                 pygame.display.flip()
                 pygame.time.wait(3000)
                 carryOn=False
-        if ball.rect.y<wall3:
-            ball.velocity[1] = -ball.velocity[1]
+            else:
+                ball.bouncev()
+        # if ball.rect.x>=wall1:
+        #     ball.velocity[0] = -ball.velocity[0]
+        #     veloc = 0
+        #     if seconds_since_epoch % 2 == 0:
+        #         veloc += 5
+        #     else:
+        #         veloc = 1
+        #     if ball.velocity[1] > 0:
+        #         ball.velocity[1] -= veloc  
+        #     else: 
+        #         ball.velocity[1] += veloc
+        # if ball.rect.x<=0:
+        #     ball.velocity[0] = -ball.velocity[0]
+        #     if seconds_since_epoch % 2 == 0:
+        #         veloc += 5
+        #     else:
+        #         veloc = 1
+        # if ball.rect.y>wall2:
+        #     ball.velocity[1] = -ball.velocity[1]
+        #     lives -= 1
+        #     if lives == 0:
+        #         font = pygame.font.Font(None, 74)
+        #         text = font.render("GAME OVER", 1, WHITE)
+        #         screen.blit(text, (250,300))
+        #         pygame.display.flip()
+        #         pygame.time.wait(3000)
+        #         carryOn=False
+        # if ball.rect.y<wall3:
+        #     ball.velocity[1] = -ball.velocity[1]
+        if pygame.sprite.collide_mask(ball, paddle):
+            ball.rect.bottom = paddle.rect.top  
+            ball.bouncev()
         if pygame.sprite.collide_mask(ball, paddle):
             ball.rect.x -= ball.velocity[0]
             ball.rect.y -= ball.velocity[1]
@@ -164,7 +194,7 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
                 projectile.kill()
 
             
-        if random.randint(1, 60) == 1: 
+        if random.randint(1, 110) == 1: 
             evil_proj = Projectile(ORANGE, 10, 10, direction="down")
             evil_proj.rect.x = random.randint(0, bg[0] - 10)
             evil_proj.rect.y = 0
@@ -176,22 +206,22 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
             if pygame.sprite.collide_mask(ball, evil_proj):
                 ball.velocity[1] = abs(max(6, abs(ball.velocity[1]))) 
                 evil_proj.kill()
-        brick_collision_list = pygame.sprite.spritecollide(ball,allbs,False)
-        for brick in brick_collision_list:
+        brickcollist = pygame.sprite.spritecollide(ball,allbs,False)
+        for brick in brickcollist:
             ball.bounce()
             score += 1
-            if hasattr(brick, "is_slow_brick") and brick.is_slow_brick:
-                if not hasattr(brick, "hits_left"):
-                    brick.hits_left = 3 
-                brick.hits_left -= 1
-                if brick.hits_left <= 0:
+            if hasattr(brick, "isslow") and brick.isslow:
+                if not hasattr(brick, "morhits"):
+                    brick.morhits = 3 
+                brick.morhits -= 1
+                if brick.morhits <= 0:
                     slowon = True
                     slowtime = time.time() + 5
                     brick.kill()
                 else:
-                    if brick.hits_left == 2:
+                    if brick.morhits == 2:
                         brick.image.fill((100, 200, 100))  
-                    elif brick.hits_left == 1:
+                    elif brick.morhits == 1:
                         brick.image.fill((200, 255, 200)) 
             else:
                 brick.kill()
@@ -200,6 +230,9 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
         BLACK = (0, 0, 0)
         screen.fill(BLACK)
         all.draw(screen)
+        fonts = pygame.font.Font(None, 36)
+        livest = fonts.render("Lives: " + str(lives), True, paddle.image.get_at((0, 0)))
+        screen.blit(livest, (20, 10))
         pygame.display.flip()
 
 

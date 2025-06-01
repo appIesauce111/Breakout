@@ -75,3 +75,12 @@ class Ball(pygame.sprite.Sprite):
         self.rect.center = old_center  
         self.mask = pygame.mask.from_surface(self.image)
 
+    def bounceh(self):
+        self.velocity[0] = -self.velocity[0]
+        if abs(self.velocity[0]) < 2:
+            self.velocity[0] = 2 if self.velocity[0] > 0 else -2
+
+    def bouncev(self):
+        self.velocity[1] = -self.velocity[1]
+        if abs(self.velocity[1]) < 2:
+            self.velocity[1] = 2 if self.velocity[1] > 0 else -2
