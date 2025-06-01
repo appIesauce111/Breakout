@@ -34,6 +34,7 @@ for i in range(8):
     if i in [2, 8]:  
         brick = Brick(GREEN, 80, 30)
         brick.is_slow_brick = True
+        brick.hits_left = 3
     else:
         brick = Brick(RED, 80, 30)
         brick.is_slow_brick = False
@@ -42,9 +43,10 @@ for i in range(8):
     all_sprites_list.add(brick)
     all_bricks.add(brick)
 for i in range(8):
-    if i in [random.randint(5,6), random.randint(7,8)]: 
+    if i in [random.randint(1,4), random.randint(5,8)]: 
         brick = Brick(GREEN, 80, 30)
         brick.is_slow_brick = True
+        brick.hits_left = 3
     else:
         brick = Brick(RED, 80, 30)
         brick.is_slow_brick = False
@@ -176,9 +178,20 @@ while carryOn:
         ball.bounce()
         score += 1
         if hasattr(brick, "is_slow_brick") and brick.is_slow_brick:
-            slow_effect_active = True
-            slow_effect_end_time = time.time() + 4
-        brick.kill()
+            if not hasattr(brick, "hits_left"):
+                brick.hits_left = 3 
+            brick.hits_left -= 1
+            if brick.hits_left <= 0:
+                slow_effect_active = True
+                slow_effect_end_time = time.time() + 3
+                brick.kill()
+            else:
+                if brick.hits_left == 2:
+                    brick.image.fill((100, 200, 100))  
+                elif brick.hits_left == 1:
+                    brick.image.fill((200, 255, 200)) 
+        else:
+            brick.kill()
     if len(all_bricks) == 0:
         font = pygame.font.Font(None, 74)
         text = font.render("LEVEL COMPLETE", 1, WHITE)
@@ -201,9 +214,10 @@ while carryOn:
         all_sprites_list.add(ball)
         for row in range(3):
             for i in range(12):
-                if i in [random.randint(5,6), random.randint(7,8)]: 
+                if i in [random.randint(1,6), random.randint(7,8)]: 
                     brick = Brick(GREEN, 80, 30)
                     brick.is_slow_brick = True
+                    brick.hits_left = 3
                 else:
                     brick = Brick(RED, 90, 35)
                     brick.is_slow_brick = False
@@ -323,9 +337,20 @@ while carryOn:
                 ball.bounce()
                 score += 1
                 if hasattr(brick, "is_slow_brick") and brick.is_slow_brick:
-                    slow_effect_active = True
-                    slow_effect_end_time = time.time() + 3
-                brick.kill()
+                    if not hasattr(brick, "hits_left"):
+                        brick.hits_left = 3
+                    brick.hits_left -= 1
+                    if brick.hits_left <= 0:
+                        slow_effect_active = True
+                        slow_effect_end_time = time.time() + 3
+                        brick.kill()
+                    else:
+                        if brick.hits_left == 2:
+                            brick.image.fill((100, 200, 100)) 
+                        elif brick.hits_left == 1:
+                            brick.image.fill((200, 255, 200))
+                else:
+                    brick.kill()
             BLACK = (0, 0, 0)
             screen.fill(BLACK)
             all_sprites_list.draw(screen)
