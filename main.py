@@ -25,6 +25,7 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
     paddle = Paddle(RED, pwidth, phigh)
     paddle.rect.x = bg[0] // 2 - pwidth // 2
     paddle.rect.y = bg[1] - 40
+    paddle.wall1 = wall1
     ball = Ball(WHITE, bbg, bbg)
     ball.rect.x = bg[0] // 2 - bbg // 2
     ball.rect.y = bg[1] // 2
@@ -212,4 +213,7 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
 
 result = play_level((800, 600), 100, 10, 10, 3, 8, 790, 590, 40)
 if result == True:
-    play_level((1200, 900), 150, 15, 15, 3, 12, 1200, 900, 40)
+    result2 = play_level((1200, 900), 150, 15, 15, 3, 12, 1200, 900, 40)
+    if result2 == True:
+        play_level((1800, 1000), 200, 20, 20, 5, 16, 1800, 1000, 40)
+
