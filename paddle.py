@@ -9,10 +9,10 @@ class Paddle(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, color, [0, 0, width * 5, height])
         self.rect = self.image.get_rect()
     def moveLeft(self, pixels):
-        self.rect.x -= pixels
+        self.rect.x -= (pixels *1.2)
         if self.rect.x < 0:
           self.rect.x = 0
     def moveRight(self, pixels):
-        self.rect.x += pixels
+        self.rect.x += (pixels * 1.2)
         if self.rect.x > 1200:
           self.rect.x = 1200

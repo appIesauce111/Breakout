@@ -81,6 +81,14 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
             paddle.moveLeft(5)
         if keys[pygame.K_RIGHT]:
             paddle.moveRight(5)
+        if keys[pygame.K_0]:
+            if keys[pygame.K_z]:
+                font = pygame.font.Font(None, 74)
+                text = font.render("LEVEL COMPLETE", 1, WHITE)
+                screen.blit(text, (200, 300))
+                pygame.display.flip()
+                pygame.time.wait(2000)
+                return True
         if paddle2 is not None and paddle2 in all:
             if keys[pygame.K_a]:
                 paddle2.moveLeft(5)
@@ -204,4 +212,4 @@ def play_level(bg, pwidth, phigh, bbg, brickrs, brickcs, wall1, wall2, wall3):
 
 result = play_level((800, 600), 100, 10, 10, 3, 8, 790, 590, 40)
 if result == True:
-    play_level((1200, 900), 150, 15, 15, 3, 12, 1600, 590, 60)
+    play_level((1200, 900), 150, 15, 15, 3, 12, 1200, 900, 40)
